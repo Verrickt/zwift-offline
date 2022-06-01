@@ -2115,8 +2115,8 @@ def experimentation_v1_variant():
                     ('game_1_15_assert_disable_abort', 1, None),
                     ('game_1_21_perf_analytics', 1, None),
                     ('game_1_18_holiday_mode', None, None),
-                    ('game_1_17_noesis_enabled', 1, None),
-                    ('game_1_20_home_screen', 1, None),
+                    ('game_1_17_noesis_enabled', None, None),
+                    ('game_1_20_home_screen', None, None),
                     ('game_1_19_noesis_dummy', None, None),
                     ('game_1_14_settings_refactor', None, None)]
 
