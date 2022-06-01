@@ -1,0 +1,303 @@
+{
+  "variants": [
+    {
+      "name": "game_1_14_draftlock_fix",
+      "values": {}
+    },
+    {
+      "name": "xplatform_partner_connection_vitality",
+      "values": {}
+    },
+    {
+      "name": "pack_dynamics_30_global",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "pack_dynamics_30_makuri",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "pack_dynamics_30_london",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "pack_dynamics_30_watopia",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "pack_dynamics_30_exclude_events",
+      "values": {}
+    },
+    {
+      "name": "game_1_19_system_alerts",
+      "values": {}
+    },
+    {
+      "name": "game_1_16_2_ble_alternate_unpair_all_paired_devices",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_17_1_tdf_femmes_yellow_jersey",
+      "values": {}
+    },
+    {
+      "name": "game_1_17_ble_disable_component_sport_filter",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_18_new_welcome_ride",
+      "values": {}
+    },
+    {
+      "name": "game_1_18_holiday_mode",
+      "values": {}
+    },
+    {
+      "name": "game_1_18_0_pack_dynamics_2_5_collision_push_back_removal",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_18_0_osx_monterey_bluetooth_uart_fix",
+      "value": true,
+      "values": {
+        "fields": {
+          "game_1_18_0_osx_monterey_bluetooth_uart_fix": {
+            "boolValue": false
+          }
+        }
+      }
+    },
+    {
+      "name": "game_1_19_0_default_rubberbanding",
+      "values": {}
+    },
+    {
+      "name": "game_1_19_use_tabbed_settings",
+      "values": {
+        "fields": {
+          "game_1_19_use_tabbed_settings": {
+            "boolValue": false
+          }
+        }
+      }
+    },
+    {
+      "name": "game_1_20_hw_experiment_1",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_19_paired_devices_alerts",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_19_real_time_unlocks",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_24_apple_novus_ble_refactor",
+      "values": {}
+    },
+    {
+      "name": "game_1_21_ble_data_guard_v2",
+      "values": {}
+    },
+    {
+      "name": "game_1_20_disable_high_volume_send_mixpanel",
+      "values": {}
+    },
+    {
+      "name": "game_1_21_add_device_jet_black_swb",
+      "values": {}
+    },
+    {
+      "name": "game_1_20_clickable_telemetry_box",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_20_0_enable_stages_steering",
+      "values": {
+        "fields": {
+          "game_1_20_0_enable_stages_steering": {
+            "boolValue": false
+          }
+        }
+      }
+    },
+    {
+      "name": "game_1_21_0_hud_highlighter",
+      "values": {}
+    },
+    {
+      "name": "game_1_21_android_novus_ble_refactor",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_21_0_gpu_deprecation_warning_message",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_21_ftms_set_rider_weight",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_21_ble_dll_v2",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_22_allow_uturns_at_low_speed",
+      "values": {}
+    },
+    {
+      "name": "game_1_21_0_ftms_sport_filter",
+      "values": {}
+    },
+    {
+      "name": "game_1_21_ftms_bike_trainer_v3",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_22_ble_device_name_hash_v2",
+      "values": {}
+    },
+    {
+      "name": "game_1_23_3_wahoo_direct_connect_trainer",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_24_workout_blocks_extendable",
+      "values": {}
+    },
+    {
+      "name": "game_1_23_universal_start_line_for_time_based_event",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_23_ble_cycling_speed_pairing_fix",
+      "values": {}
+    },
+    {
+      "name": "game_1_25_0_gmplay_2246_cull_inaudible_entity_audio",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_24_display_workout_of_the_week_card",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_24_display_recommended_workout_cards",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_25_pack_steering_collision_reduction",
+      "values": {
+        "fields": {
+          "game_1_25_pack_steering_collision_reduction": {
+            "boolValue": true
+          }
+        }
+      }
+    },
+    {
+      "name": "game_1_25_wdc_error_dialogs",
+      "values": {}
+    },
+    {
+      "name": "game_1_25_extended_pedal_asssit",
+      "values": {
+        "fields": {
+          "initialDropInTime": {
+            "numberValue": 10000.0
+          },
+          "extendedDropInTime": {
+            "numberValue": 60000.0
+          },
+          "initialDropInFrames": {
+            "numberValue": 1000.0
+          }
+        }
+      }
+    },
+    {
+      "name": "game_1_25_flat_grade_while_in_ui",
+      "values": {}
+    },
+    {
+      "name": "log_ble_packets",
+      "values": {}
+    },
+    {
+      "name": "game_1_15_assert_disable_abort",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_21_perf_analytics",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_25_watchdog_timer",
+      "values": {
+        "fields": {
+          "timeoutInterval": {
+            "numberValue": 30.0
+          }
+        }
+      }
+    },
+    {
+      "name": "game_1_17_noesis_enabled",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_20_home_screen",
+      "values": {}
+    },
+    {
+      "name": "game_1_14_settings_refactor",
+      "value": true,
+      "values": {}
+    },
+    {
+      "name": "game_1_23_workout_auto_pause",
+      "values": {
+        "fields": {
+          "reenableERGPowerThreshold": {
+            "numberValue": 10.0
+          },
+          "rampUpTime": {
+            "numberValue": 10.0
+          },
+          "workoutAutoPauseTime": {
+            "numberValue": 3.0
+          },
+          "minERGModeDisableTime": {
+            "numberValue": 5.0
+          }
+        }
+      }
+    }
+  ]
+}

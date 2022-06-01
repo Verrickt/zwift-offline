@@ -6,9 +6,9 @@ import sys
 sys.modules['FixTk'] = None
 
 a = Analysis(['standalone.py'],
-             pathex=['/home/alexvh/Code/zoffline'],
+             pathex=['protobuf'],
              binaries=[],
-             datas=[('ssl/*', 'ssl'), ('initialize_db.sql', '.'), ('start_lines.csv', '.')],
+             datas=[('ssl/*', 'ssl'), ('initialize_db.sql', '.'), ('start_lines.csv', '.'), ('game_info.txt', '.'), ('variants.txt', '.')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -33,12 +33,11 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          upx_exclude="vcruntime140.dll",
           runtime_tmpdir=None,
           console=True )
 
 import subprocess
 subprocess.call(['C:\\Program Files (x86)\\Windows Kits\\10\\App Certification Kit\\signtool.exe', 'sign',
-                '/f', 'ssl\cert-zwift-com.p12',
+                '/f', 'ssl\\cert-zwift-com.p12',
                 '/t', 'http://timestamp.digicert.com',
-                'dist\zoffline.exe'])
+                'dist\\zoffline.exe'])
