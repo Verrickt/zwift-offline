@@ -31,9 +31,9 @@ import json
 import os
 import requests
 import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import protobuf.activity_pb2 as activity_pb2
-import protobuf.profile_pb2 as profile_pb2
+sys.path.append(os.path.join(sys.path[0], 'protobuf')) # otherwise import in .proto does not work
+import activity_pb2
+import profile_pb2
 
 try:
     input = raw_input
@@ -87,10 +87,10 @@ def post_credentials(session, username, password):
         sys.exit()
 
 
-def upload_activity(session, access_token, activity):
+def create_activity(session, access_token, activity):
     try:
-        response = session.put(
-            url="https://us-or-rly101.zwift.com/api/profiles/%s/activities/%s" % (activity.player_id, activity.id),
+        response = session.post(
+            url="https://us-or-rly101.zwift.com/api/profiles/%s/activities" % activity.player_id,
             headers={
                 "Content-Type": "application/x-protobuf-lite",
                 "Accept": "application/json",
@@ -108,7 +108,37 @@ def upload_activity(session, access_token, activity):
             print('Response HTTP Status Code: {status_code}'.format(
                 status_code=response.status_code))
 
-        return response.content
+        json_dict = json.loads(response.content)
+        return json_dict["id"]
+
+    except requests.exceptions.RequestException as e:
+        print('HTTP Request failed: %s' % e)
+
+
+def upload_activity(session, access_token, activity):
+    try:
+        response = session.put(
+            url="https://us-or-rly101.zwift.com/api/profiles/%s/activities/%s" % (activity.player_id, activity.id),
+            headers={
+                "Content-Type": "application/x-protobuf-lite",
+                "Accept": "application/json",
+                "Connection": "keep-alive",
+                "Host": "us-or-rly101.zwift.com",
+                "User-Agent": "Zwift/115 CFNetwork/758.0.2 Darwin/15.0.0",
+                "Authorization": "Bearer %s" % access_token,
+                "Accept-Language": "en-us",
+            },
+            data=activity.SerializeToString(),
+            params={"upload-to-strava": "true"},
+            verify=args.verifyCert,
+        )
+
+        if args.verbose:
+            print('Response HTTP Status Code: {status_code}'.format(
+                status_code=response.status_code))
+
+        json_dict = json.loads(response.content)
+        return json_dict["id"]
 
     except requests.exceptions.RequestException as e:
         print('HTTP Request failed: %s' % e)
@@ -226,6 +256,11 @@ def main(argv):
     session = requests.session()
     access_token, refresh_token = login(session, username, password)
     activity.player_id = get_player_id(session, access_token)
+    new_activity = activity_pb2.Activity()
+    new_activity.CopyFrom(activity)
+    new_activity.ClearField('id')
+    new_activity.ClearField('fit')
+    activity.id = create_activity(session, access_token, new_activity)
     ret = upload_activity(session, access_token, activity)
     print(ret)
     logout(session, refresh_token)

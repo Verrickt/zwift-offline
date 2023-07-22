@@ -27,8 +27,7 @@
 
 import json
 import requests
-import protobuf.activity_pb2 as activity_pb2
-import protobuf.profile_pb2 as profile_pb2
+import profile_pb2
 
 
 def post_credentials(session, username, password):
@@ -67,12 +66,10 @@ def post_credentials(session, username, password):
         print('Invalid uname and/or password')
 
 
-def query_player_profile(session, access_token):
-    # Query Player Profile
-    # GET https://us-or-rly101.zwift.com/api/profiles/<player_id>
+def query(session, access_token, route):
     try:
         response = session.get(
-            url="https://us-or-rly101.zwift.com/api/profiles/me",
+            url="https://us-or-rly101.zwift.com/%s" % route,
             headers={
                 "Accept-Encoding": "gzip, deflate",
                 "Accept": "application/x-protobuf-lite",
@@ -120,6 +117,29 @@ def login(session, user, password):
     return access_token, refresh_token
 
 
+def create_activity(session, access_token, activity):
+    try:
+        response = session.post(
+            url="https://us-or-rly101.zwift.com/api/profiles/%s/activities" % activity.player_id,
+            headers={
+                "Content-Type": "application/x-protobuf-lite",
+                "Accept": "application/json",
+                "Connection": "keep-alive",
+                "Host": "us-or-rly101.zwift.com",
+                "User-Agent": "Zwift/115 CFNetwork/758.0.2 Darwin/15.0.0",
+                "Authorization": "Bearer %s" % access_token,
+                "Accept-Language": "en-us",
+            },
+            data=activity.SerializeToString(),
+        )
+
+        json_dict = json.loads(response.content)
+        return json_dict["id"]
+
+    except requests.exceptions.RequestException as e:
+        print('HTTP Request failed: %s' % e)
+
+
 def upload_activity(session, access_token, activity):
     try:
         response = session.put(
@@ -134,9 +154,11 @@ def upload_activity(session, access_token, activity):
                 "Accept-Language": "en-us",
             },
             data=activity.SerializeToString(),
+            params={"upload-to-strava": "true"}
         )
+
         return response.status_code
-        
+
     except requests.exceptions.RequestException as e:
         print('HTTP Request failed: %s' % e)
 
