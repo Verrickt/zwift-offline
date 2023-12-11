@@ -16,7 +16,7 @@ from urllib3 import PoolManager
 from http.server import SimpleHTTPRequestHandler
 from http.cookies import SimpleCookie
 from collections import deque
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from Crypto.Cipher import AES
 
 import zwift_offline as zo
@@ -82,9 +82,6 @@ CLIMB_OVERRIDE = deque(maxlen=16)
 bot_update_freq = 3
 pacer_update_freq = 1
 simulated_latency = 300 #makes bots animation smoother than using current time
-margin = 0.1 #avoids bots donuting in "just watch" (now player updates only once per second)
-last_pp_update = 0
-last_bot_update = 0
 last_pp_updates = {}
 last_bot_updates = {}
 global_ghosts = {}
@@ -154,10 +151,7 @@ class CDNHandler(SimpleHTTPRequestHandler):
                     self.wfile.write(output.encode())
                     CLIMB_OVERRIDE.remove(override)
                     return
-        exceptions = ['Launcher_ver_cur.xml', 'LauncherMac_ver_cur.xml',
-                      'Zwift_ver_cur.xml', 'ZwiftMac_ver_cur.xml',
-                      'ZwiftAndroid_ver_cur.xml', 'Zwift_StreamingFiles_ver_cur.xml']
-        if CDN_PROXY and self.path.startswith('/gameassets/') and not path_end in exceptions:
+        if CDN_PROXY and self.path.startswith('/gameassets/') and not path_end.endswith('_ver_cur.xml') and not ('User-Agent' in self.headers and 'python-urllib3' in self.headers['User-Agent']):
             try:
                 self.send_response(200)
                 self.end_headers()
@@ -470,7 +464,7 @@ def save_ghost(name, player_id):
             print('save_ghost: %s' % repr(exc))
             return
         ghosts.rec.player_id = player_id
-        f = '%s/%s-%s.bin' % (folder, datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S"), name)
+        f = '%s/%s-%s.bin' % (folder, datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S"), name)
         with open(f, 'wb') as fd:
             fd.write(ghosts.rec.SerializeToString())
 
@@ -540,15 +534,15 @@ def load_pace_partners():
                     pp.position = 0
 
 def play_pace_partners():
-    global last_pp_update
     while True:
+        start = time.perf_counter()
         for pp_id in global_pace_partners.keys():
             pp = global_pace_partners[pp_id]
             if pp.position < len(pp.route.states) - 1: pp.position += 1
             else: pp.position = 0
             pp.route.states[pp.position].id = pp_id
-        last_pp_update = time.monotonic()
-        time.sleep(pacer_update_freq)
+        pause = pacer_update_freq - (time.perf_counter() - start)
+        if pause > 0: time.sleep(pause)
 
 def load_bots():
     body_types = [16, 48, 80, 272, 304, 336, 528, 560, 592]
@@ -573,6 +567,7 @@ def load_bots():
             for (root, dirs, files) in os.walk(path):
                 for f in files:
                     if f.endswith('.bin'):
+                        positions = []
                         for n in range(0, multiplier):
                             p = profile_pb2.PlayerProfile()
                             p.CopyFrom(zo.random_profile(p))
@@ -583,9 +578,11 @@ def load_bots():
                                 bot.route = udp_node_msgs_pb2.Ghost()
                                 with open(os.path.join(root, f), 'rb') as fd:
                                     bot.route.ParseFromString(fd.read())
+                                positions = list(range(len(bot.route.states)))
+                                random.shuffle(positions)
                             else:
                                 bot.route = global_bots[i + 1000000].route
-                            bot.position = random.randrange(len(bot.route.states))
+                            bot.position = positions.pop()
                             if not loop_riders:
                                 loop_riders = data['riders'].copy()
                                 random.shuffle(loop_riders)
@@ -603,8 +600,8 @@ def load_bots():
                         i += 1
 
 def play_bots():
-    global last_bot_update
     while True:
+        start = time.perf_counter()
         if zo.reload_pacer_bots:
             zo.reload_pacer_bots = False
             if os.path.isfile(ENABLE_BOTS_FILE):
@@ -615,8 +612,8 @@ def play_bots():
             if bot.position < len(bot.route.states) - 1: bot.position += 1
             else: bot.position = 0
             bot.route.states[bot.position].id = bot_id
-        last_bot_update = time.monotonic()
-        time.sleep(bot_update_freq)
+        pause = bot_update_freq - (time.perf_counter() - start)
+        if pause > 0: time.sleep(pause)
 
 def remove_inactive():
     while True:
@@ -724,7 +721,7 @@ class UDPHandler(socketserver.BaseRequestHandler):
                     ghosts.loaded = True
                     load_ghosts(player_id, state, ghosts)
                 #Save player state as ghost
-                if t > ghosts.last_rec + bot_update_freq - margin:
+                if t >= ghosts.last_rec + bot_update_freq:
                     ghosts.rec.states.append(state)
                     ghosts.last_rec = t
                 #Start loaded ghosts
@@ -762,21 +759,21 @@ class UDPHandler(socketserver.BaseRequestHandler):
                 is_nearby, distance = nearby_distance(watching_state, player)
                 if is_nearby and is_state_new_for(player, player_id):
                     nearby[p_id] = distance
-        if t > last_pp_updates[player_id] + pacer_update_freq - margin and last_pp_update > last_pp_updates[player_id]:
+        if t >= last_pp_updates[player_id] + pacer_update_freq:
             last_pp_updates[player_id] = t
             for p_id in global_pace_partners.keys():
                 pp = global_pace_partners[p_id]
                 is_nearby, distance = nearby_distance(watching_state, pp.route.states[pp.position])
                 if is_nearby:
                     nearby[p_id] = distance
-        if t > last_bot_updates[player_id] + bot_update_freq - margin and last_bot_update > last_bot_updates[player_id]:
+        if t >= last_bot_updates[player_id] + bot_update_freq:
             last_bot_updates[player_id] = t
             for p_id in global_bots.keys():
                 bot = global_bots[p_id]
                 is_nearby, distance = nearby_distance(watching_state, bot.route.states[bot.position])
                 if is_nearby:
                     nearby[p_id] = distance
-        if ghosts.started and t > ghosts.last_play + bot_update_freq - margin:
+        if ghosts.started and t >= ghosts.last_play + bot_update_freq:
             ghosts.last_play = t
             for i, g in enumerate(ghosts.play):
                 if len(g.route.states) > g.position:

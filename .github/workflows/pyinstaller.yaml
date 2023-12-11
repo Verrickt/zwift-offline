@@ -12,32 +12,21 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.11'
 
-    - uses: engineerd/configurator@v0.0.8
+    - uses: engineerd/configurator@v0.0.10
       with:
         name: "upx.exe"
-        url: "https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-win64.zip"
-        pathInArchive: "upx-4.0.2-win64/upx.exe"
+        url: "https://github.com/upx/upx/releases/download/v4.2.1/upx-4.2.1-win64.zip"
+        pathInArchive: "upx-4.2.1-win64/upx.exe"
 
     - run: pip install -r requirements.txt
-    - run: pip install pyinstaller git+https://github.com/oldnapalm/garmin-uploader.git
+    - run: pip install pyinstaller garth
     - run: pyinstaller standalone.spec
 
-    - uses: vimtor/action-zip@v1
+    - uses: actions/upload-artifact@v3
       with:
-        files: dist
-        dest: zoffline-nightly.zip
-
-    - uses: WebFreak001/deploy-nightly@v1.1.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # automatically provided by github actions
-      with:
-        upload_url: https://uploads.github.com/repos/zoffline/zwift-offline/releases/87551648/assets{?name,label}
-        release_id: 87551648
-        asset_path: zoffline-nightly.zip
-        asset_name: zoffline-nightly.zip
-        asset_content_type: application/zip
+        path: dist/*
