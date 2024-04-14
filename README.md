@@ -2,7 +2,7 @@
 
 zoffline enables the use of [Zwift](http://zwift.com) offline by acting as a partial implementation of a Zwift server. By default zoffline is only for a single player. See [Step 6: Enable Multiplayer](#step-6-optional-enable-multiplayer) for how to enable support for multiple users/profiles.
 
-zoffline also offers riding against ghosts (your previous rides). Enable this feature by checking "Enable ghosts" in zoffline's launcher. See [ghosts and bots](https://github.com/zoffline/zwift-offline/wiki/Ghosts-and-bots) for extra details.
+zoffline also offers riding against ghosts (your previous rides). Enable this feature by checking "Enable ghosts" in zoffline's launcher. See [Ghosts and bots](#ghosts-and-bots) for extra details.
 
 Additionally, zoffline's launcher allows selecting a specific map to ride on without mucking about with config files.
 
@@ -96,10 +96,10 @@ zoffline can be installed on the same machine as Zwift or another local machine.
 <details><summary>Windows Instructions</summary>
 
 * Install Zwift
-  * If your Zwift version is 1.0.122968, you're all set.
+  * If your Zwift version is 1.0.128160, you're all set.
   * If Zwift is not installed, install it before installing zoffline.
-  * If your Zwift version is newer than 1.0.122968 and zoffline is running from source: copy ``C:\Program Files (x86)\Zwift\Zwift_ver_cur.xml`` to zoffline's ``cdn/gameassets/Zwift_Updates_Root/`` overwriting the existing file.
-  * If your Zwift version is newer than 1.0.122968 and zoffline is not running from source: wait for zoffline to be updated.
+  * If your Zwift version is newer than 1.0.128160 and zoffline is running from source: copy ``C:\Program Files (x86)\Zwift\Zwift_ver_cur.xml`` to zoffline's ``cdn/gameassets/Zwift_Updates_Root/`` overwriting the existing file.
+  * If your Zwift version is newer than 1.0.128160 and zoffline is not running from source: wait for zoffline to be updated.
 * __NOTE:__ instead of performing the steps below you can instead just run the __configure_client__ script from https://github.com/zoffline/zwift-offline/releases/tag/zoffline_helper
 * On your Windows machine running Zwift, copy the following files in this repo to a known location:
   * [ssl/cert-zwift-com.p12](https://github.com/zoffline/zwift-offline/raw/master/ssl/cert-zwift-com.p12)
@@ -124,36 +124,16 @@ to generate your own certificates and do the same.
 <details><summary>macOS Instructions</summary>
 
 * Install Zwift
-  * If your Zwift version is 1.0.122968, you're all set.
+  * If your Zwift version is 1.0.128160, you're all set.
   * If Zwift is not installed, install it before installing zoffline.
-  * If your Zwift version is newer than 1.0.122968: copy ``~/Library/Application Support/Zwift/ZwiftMac_ver_cur.xml`` to zoffline's ``cdn/gameassets/Zwift_Updates_Root/`` overwriting the existing file.
-* On your Mac machine running Zwift, copy the following files in this repo to a known location:
-  * [ssl/cert-zwift-com.p12](https://github.com/zoffline/zwift-offline/raw/master/ssl/cert-zwift-com.p12)
-  * [ssl/cert-zwift-com.pem](https://github.com/zoffline/zwift-offline/raw/master/ssl/cert-zwift-com.pem)
+  * If your Zwift version is newer than 1.0.128160: copy ``~/Library/Application Support/Zwift/ZwiftMac_ver_cur.xml`` to zoffline's ``cdn/gameassets/Zwift_Updates_Root/`` overwriting the existing file.
+* On your Mac machine running Zwift, copy the file [ssl/cert-zwift-com.pem](https://github.com/zoffline/zwift-offline/raw/master/ssl/cert-zwift-com.pem) in this repo to a known location.
 * Open Keychain Access, select "System" under "Keychains", select "Certificates" under "Category"
-    * Click "File - Import Items..." and import ``ssl/cert-zwift-com.p12``
+    * Click "File - Import Items..." and import cert-zwift-com.pem
     * Right click "\*.zwift.com", select "Get Info" and under "Trust" choose "When using this certificate: Always Trust".
-    * If you're prompted for a password, just leave it blank. There is no password.
 * Using a text editor open ``~/Library/Application Support/Zwift/data/cacert.pem``
-  * Append the contents of the SSL certificate ``ssl/cert-zwift-com.pem`` to cacert.pem (only the certificate and not the included private key)
-* Using a text editor (with admin privileges) open ``/Applications/Zwift.app/Contents/Info.plist``
-  * Insert in the main dict:
-    ```
-    <key>NSAppTransportSecurity</key>
-   	<dict>
-        <key>NSExceptionDomains</key>
-        <dict>
-            <key>zwift.com</key>
-            <dict>
-                <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                <true/>
-                <key>NSIncludesSubdomains</key>
-                <true/>
-            </dict>
-        </dict>
-   	</dict>
-    ```
-* Run ``sudo codesign --force --deep --sign - /Applications/Zwift.app`` in terminal. See https://github.com/zoffline/zwift-offline/issues/132 for extra details.
+  * Append only the certificate (lines 29 to 53) from cert-zwift-com.pem to cacert.pem
+  * __IMPORTANT:__ do not append the private key (lines 1 to 28)
 * Using a text editor (with admin privileges) open ``/etc/hosts``
   * Append this line: ``<zoffline ip> us-or-rly101.zwift.com secure.zwift.com cdn.zwift.com launcher.zwift.com``
     <br />(Where ``<zoffline ip>`` is the ip address of the machine running zoffline. If
@@ -254,11 +234,10 @@ To obtain your current profile:
 
 <details><summary>Expand</summary>
 
-* __NOTE:__ instead of performing the steps below you can instead use the "Settings - Strava" button in the launcher window to authorize (Windows and macOS only).
-* [OPTIONAL] Get CLIENT_ID and CLIENT_SECRET from https://www.strava.com/settings/api
+* Get CLIENT_ID and CLIENT_SECRET from https://www.strava.com/settings/api
+* __NOTE:__ instead of performing the steps below you can instead set the authorization callback domain of your API application to ``launcher.zwift.com`` and use the "Settings - Strava" button in the launcher window (Windows and macOS only).
 * Run ``scripts/strava_auth.py --client-id CLIENT_ID --client-secret CLIENT_SECRET``
   * Or, if using the Windows zoffline.exe version without Python installed you can run ``strava_auth.exe`` obtained from https://github.com/zoffline/zwift-offline/releases/tag/zoffline_helper in place of ``scripts/strava_auth.py``
-  * Run without arguments to use default values.
 * Open http://localhost:8000/ and authorize.
 * Move the resulting ``strava_token.txt`` (saved in whatever directory you ran ``strava_auth.py`` in) into the ``storage/1`` directory.
 * If testing, ride at least 300 meters, shorter activities won't be uploaded.
@@ -270,6 +249,8 @@ To obtain your current profile:
 <details><summary>Expand</summary>
 
 * If running from source, install garth: ``pip install garth``
+* If needed, create a file ``garmin_domain.txt`` in the ``storage`` directory containing the domain
+  * For China use ``garmin.cn``
 * __NOTE:__ instead of performing the step below you can instead use the "Settings - Garmin" button in the launcher window to enter your credentials (Windows and macOS only).
 * Create a file ``garmin_credentials.txt`` in the ``storage/1`` directory containing your login credentials
   ```
@@ -295,8 +276,6 @@ To enable support for multiple users perform the steps below:
 </details>
 
 ### Step 7 [OPTIONAL]: Install Zwift Companion App
-
-Create a ``server-ip.txt`` file in the ``storage`` directory containing the IP address of the PC running zoffline.
 
 <details><summary>Android (non-rooted device)</summary>
 
@@ -338,6 +317,25 @@ Create a ``server-ip.txt`` file in the ``storage`` directory containing the IP a
   MinProtocol = TLSv1.0
   CipherString = DEFAULT@SECLEVEL=1
   ```
+</details>
+
+### Ghosts and bots
+
+<details><summary>Expand</summary>
+
+#### Ghosts
+
+* Enable this feature by checking "Enable ghosts" in zoffline's launcher.
+* If you are running Zwift on Android, create a file ``enable_ghosts.txt`` inside the ``storage`` folder or access ``https://<zoffline_ip>/login/`` from a browser if you are using multiplayer (you must click the "Start Zwift" button to save the option).
+* When you save an activity, the ghost will be saved in ``storage/<player_id>/ghosts/<world>/<route>``. Next time you ride the same route, the ghost will be loaded.
+* Type ``.regroup`` in chat to regroup the ghosts.
+
+#### Bots
+
+* Create a file ``enable_bots.txt`` inside the ``storage`` folder to load ghosts as bots, they will keep riding around regardless of the route you are riding.
+* Optionally, ``enable_bots.txt`` can contain a multiplier value (be careful, if the resulting number of bots is too high, it may cause performance issues or not work at all).
+* Names, nationalities and equipment can be customized by creating a file ``bot.txt`` inside the ``storage`` folder. The scripts ``get_pro_names.py`` and ``get_strava_names.py`` can be used to populate this file.
+* If you want some random bots, check [this repository](https://github.com/oldnapalm/zoffline-bots).
 </details>
 
 ## Community Discord server and Strava club
